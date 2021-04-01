@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Heading, Stack } from '@chakra-ui/react';
 import React from 'react';
-import findAllUserProfiles from '../../graphql/queries';
+import { findAllUserProfiles } from '../../graphql/queries';
 
 export default function UserProfiles(): JSX.Element {
   // Function to create a town
