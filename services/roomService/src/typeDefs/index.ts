@@ -17,6 +17,13 @@ type User {
   requests:[String!]
   friends:[String!]
   sentRequests:[String!]
+  bio: String
+  location: String
+  occupation: String
+  instagramLink: String
+  facebookLink: String
+  linkedInLink: String
+  password: String
 }
 
 
@@ -43,8 +50,12 @@ input townCreateRequestInput {
 
 input updateUserInput {
   id: ID!
-  userName: String
-  email: String
+  bio: String
+  location: String
+  occupation: String
+  instagramLink: String
+  facebookLink: String
+  linkedInLink: String
   password: String
 }
 
