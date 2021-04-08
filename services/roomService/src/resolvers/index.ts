@@ -1,4 +1,5 @@
 import { userInfo } from 'os';
+import { AuthenticationError } from 'apollo-server-express';
 import { userModel as User } from '../data/models/users/user.model.server';
 import {
   townCreateHandler,
@@ -156,8 +157,9 @@ const resolvers = {
         throw error;
       }
     },
-    addFriend: async (_: any, args: any) => {
+    addFriend: async (_: any, args: any, { user }) => {
       try {
+        const email = await user;
         await User.updateOne(
           { username: args.input.userNameTo },
           { $push: { requests: args.input.userNameFrom } },
@@ -169,7 +171,7 @@ const resolvers = {
         return true;
       } catch (error) {
         console.log(error);
-        throw error;
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
     deleteUser: async (_: any, args: any) => {
