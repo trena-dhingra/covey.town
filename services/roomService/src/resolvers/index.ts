@@ -1,11 +1,11 @@
-import { userInfo } from 'os';
-import { userModel as User } from '../data/models/users/user.model.server';
+import User from '../data/models/users/user.model.server' ;
 import {
   townCreateHandler,
   townJoinHandler,
   townDeleteHandler,
-  townListHandler
+  townListHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
+import isTokenValid  from '../validate';
 /**
  * All the resolvers are defined here.
  */
@@ -198,10 +198,17 @@ const resolvers = {
      * @param args represents the arguments to the function
      * @returns TownCreateResponse
      */
-    townCreateRequest: async (_: any, args: any) => await townCreateHandler({
-      friendlyName: args.input.friendlyName,
-      isPubliclyListed: args.input.isPubliclyListed,
-    }),
+    townCreateRequest: async (_: any, args: any, context: any) => {
+      const { token } = await context();
+      const { error }  = await isTokenValid(token);
+      if (error) {
+        throw new Error(error);
+      }
+      await townCreateHandler({
+        friendlyName: args.input.friendlyName,
+        isPubliclyListed: args.input.isPubliclyListed,
+      });
+    },
 
     townDeleteRequest: async (_: any, args: any) => {
       const response = await townDeleteHandler({

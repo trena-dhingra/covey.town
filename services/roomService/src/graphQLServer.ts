@@ -5,7 +5,7 @@ import io from 'socket.io';
 import {
   townSubscriptionHandler,
 } from './requestHandlers/CoveyTownRequestHandlers';
-import { connection } from './data/Utils/index';
+import connection from './data/Utils/index';
 import typeDefs from './typeDefs/index';
 import resolvers from './resolvers/index';
 
@@ -15,12 +15,19 @@ const app = Express();
 app.use(Express.json());
 app.use(CORS());
 
+const context = async (req:any) => {
+  const { authorization: token } = req.headers;
+
+  return { token };
+};
+
 /**
  * Getting the instance of Apollo Server.
  */
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
+  context,
 });
 
 
