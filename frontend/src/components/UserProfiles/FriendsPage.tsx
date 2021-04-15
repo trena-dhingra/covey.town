@@ -1,5 +1,6 @@
 import React , {useState, useEffect} from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
+import { useQuery } from '@apollo/client';
 import {
     Box,
     Text,
@@ -11,7 +12,7 @@ import {
     Spacer,
     useToast,
   } from "@chakra-ui/react"
-import { searchUserByEmail, searchUserByUserName } from '../../graphql/queries';
+import { searchUserByEmail, searchUserByUserNameQuery, searchUserByEmailQuery} from '../../graphql/queries';
 
 
 function FriendsPage(): JSX.Element {
@@ -27,6 +28,7 @@ function FriendsPage(): JSX.Element {
   const { user } = useAuth0();
   const [friends, setFriends] = useState<string[]>([]);
   const [requests, setRequests] = useState<string[]>([]);
+  const { data } = useQuery(searchUserByUserNameQuery);
 
   useEffect(() => {
     const findUser = async () => {
@@ -38,8 +40,7 @@ function FriendsPage(): JSX.Element {
   },[user.email]);
 
   const handleGoToFriendPage = async (friendUser: any) => {
-    const userProfile = await searchUserByUserName(friendUser);
-    console.log(userProfile);
+    const userProfile = data.searchUserByUserNameQuery;
   };
  
 

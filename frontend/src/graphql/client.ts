@@ -2,9 +2,12 @@
  *  caching.
  */
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from 'apollo-boost';
+import { useAuth0 } from "@auth0/auth0-react";
+
 
 /** Corresponds to http URL */
-const httpUrl = process.env.NODE_ENV === 'development'?'http://localhost:8081/graphql':`${process.env.REACT_APP_TOWNS_SERVICE_URL}/graphql`;
+const httpUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8081/graphql' : `${process.env.REACT_APP_TOWNS_SERVICE_URL}/graphql`;
+
 
 const httpLink = ApolloLink.from([new HttpLink({ uri: httpUrl })]);
 

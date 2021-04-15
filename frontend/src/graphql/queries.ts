@@ -36,7 +36,7 @@ export interface User {
 }
 
 
-const findAllUsers = gql`
+export const findAllUsers = gql`
   query findAllUsers {
     users {
       username
@@ -45,7 +45,7 @@ const findAllUsers = gql`
   }
 `;
 
-const findAllUsersByUserNameQuery = gql`
+export const findAllUsersByUserNameQuery = gql`
   query findAllUsersByUserName($username: String!) {
     searchUserByUserName(username: $username) {
       id
@@ -55,7 +55,7 @@ const findAllUsersByUserNameQuery = gql`
   }
 `;
 
-const searchUserByUserNameQuery = gql`
+export const searchUserByUserNameQuery = gql`
   query searchUserByUserName ($username: String!) {
     searchUserByUserName (username: $username){
       id
@@ -74,7 +74,7 @@ const searchUserByUserNameQuery = gql`
   }
 `;
 
-const searchUserByEmailQuery = gql`
+export const searchUserByEmailQuery = gql`
   query searchUserByEmail ($email: String!) {
     searchUserByEmail (email: $email){
       id
@@ -93,7 +93,7 @@ const searchUserByEmailQuery = gql`
   }
 `;
 
-const createTownMutation = gql`
+export const createTownMutation = gql`
   mutation townCreate($input: townCreateRequestInput!) {
     townCreateRequest(input: $input) {
       isOK
@@ -106,7 +106,7 @@ const createTownMutation = gql`
   }
 `;
 
-const joinTownMutation = gql`
+export const joinTownMutation = gql`
   mutation joinTown($input: townJoinRequestInput!){
     townJoinRequest(input: $input) {
       isOK
@@ -132,7 +132,7 @@ const joinTownMutation = gql`
   }
 `;
 
-const addFriendMutation = gql`
+export const addFriendMutation = gql`
   mutation addFriend($input: addFriendInput!) {
     addFriend(input: $input) 
   }

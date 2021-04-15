@@ -1,6 +1,7 @@
 import React , {useState, useEffect} from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import "../Styles/Profile.css";
+import { useQuery } from '@apollo/client';
 import { withRouter, Link } from "react-router-dom";
 import {
   Flex,
@@ -13,11 +14,12 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
-import { findAllUserProfiles, searchUserByEmail, User } from '../../graphql/queries';
+import { findAllUsers, User,searchUserByEmailQuery } from '../../graphql/queries';
 
 
 function ProfileComponent(): JSX.Element {
   const { user, isLoading } = useAuth0();
+  const [email, setEmail] = useState<string>(user.email);
   const [userName, setUserName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
   const [facebookLink,setFacebookLink] = useState<string>("");
@@ -26,25 +28,36 @@ function ProfileComponent(): JSX.Element {
   const [location, setLocation] = useState<string>("");
   const [occupation, setOccupation] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
-
+  const findAllUsersResult = useQuery(findAllUsers);
+  const userInfoResult = useQuery(searchUserByEmailQuery, {
+    variables: { email },
+  });
+  
   useEffect(() => {
     const findUser = async () => {
-      const userInfo = await searchUserByEmail(user.email);
-      setUserName(userInfo.username);
-      setBio(userInfo.bio);
-      setFacebookLink(userInfo.facebookLink);
-      setInstagramLink(userInfo.instagramLink);
-      setLinkedInLink(userInfo.linkedInLink);
-      setLocation(userInfo.location);
-      setOccupation(userInfo.occupation);
+      if (!userInfoResult.loading) {
+        const userInfo = userInfoResult && userInfoResult.data && userInfoResult.data.searchUserByEmailQuery;
+        if (userInfo) {
+          setUserName(userInfo.username);
+          setBio(userInfo.bio);
+          setFacebookLink(userInfo.facebookLink);
+          setInstagramLink(userInfo.instagramLink);
+          setLinkedInLink(userInfo.linkedInLink);
+          setLocation(userInfo.location);
+          setOccupation(userInfo.occupation);
+        }
+      } 
     }
-    const findAllUsers = async () => {
-      const userProfiles = await findAllUserProfiles();
-      setUsers([...userProfiles]);
+    const findAllUsersProfiles = async () => {
+      
+      if (!findAllUsersResult.loading) {
+        const userProfiles = findAllUsersResult.data.users;
+        setUsers([...userProfiles]);
+      }
     }
     findUser();
-    findAllUsers();
-  });
+    findAllUsersProfiles();
+  },[findAllUsersResult,user,userInfoResult]);
 
 
   if (isLoading) {
