@@ -58,24 +58,12 @@ const resolvers = {
 
   Mutation: {
     /**
-     *  Resolver to sign up - will be removed if everything is done in frontend by Auth0.
+     * Resolver to update user fields: bio, location, occupation,
+     * instgramLink, facebookLink, linkedInLink.
      * @param _ parent is not used here.
      * @param args represents all the input parameters.
-     * @returns the user profile.
+     * @returns the updated user profile.
      */
-    signUp: async (_: any, args: any) => {
-      const user = await User.findOne({ email: args.input.email });
-      if (user) {
-        throw new Error('User already in use');
-      }
-      const newUser = new User({
-        username: args.input.userName,
-        email: args.input.email,
-        password: args.input.password,
-      });
-      const result = newUser.save();
-      return result;
-    },
     updateUser: async (_: any, args: any) => {
       let user = await User.findOne({ id: args.input.id });
       if (user !== undefined) {
@@ -172,6 +160,12 @@ const resolvers = {
         throw error;
       }
     },
+    /**
+     *  Resolver to delete user.
+     * @param _ parent is not used here.
+     * @param args represents all the input parameters.
+     * @returns boolean:  true, if user is successfully deleted, false otherwise.
+     */
     deleteUser: async (_: any, args: any) => {
       const user = await User.findOne({ email: args.input.email });
       if (user !== undefined) {
@@ -203,13 +197,16 @@ const resolvers = {
       isPubliclyListed: args.input.isPubliclyListed,
     }),
 
-    townDeleteRequest: async (_: any, args: any) => {
-      const response = await townDeleteHandler({
-        coveyTownID: args.input.coveyTownID,
-        coveyTownPassword: args.input.coveyTownPassword,
-      });
-      return response;
-    },
+    /**
+     *  Resolver to handle town delete request.
+     * @param _ parent is not used here.
+     * @param args represents all the input parameters.
+     * @returns TownDeleteResponse
+     */
+    townDeleteRequest: async (_: any, args: any) => await townDeleteHandler({
+      coveyTownID: args.input.coveyTownID,
+      coveyTownPassword: args.input.coveyTownPassword,
+    }),
   },
 };
 
