@@ -9,19 +9,19 @@ const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 // Authentication
 const client = jwksClient({
-  jwksUri: 'https://<YOUR_AUTH0_DOMAIN>/.well-known/jwks.json',
+  jwksUri: 'https://dev-fse.us.auth0.com/.well-known/jwks.json',
 });
 
-function getKey(header: any, cb: any){
-  client.getSigningKey(header.kid, (_:any, key: any) => {
+function getKey(header: any, cb: any) : any{
+  client.getSigningKey(header.kid, (_:any, key: any) : any=> {
     const signingKey = key.publicKey || key.rsaPublicKey;
     cb(null, signingKey);
   });
 }
 
 const options = {
-  audience: '<YOUR_AUTH0_CLIENT_ID>',
-  issuer: 'https://<YOUR_AUTH0_DOMAIN>/',
+  aud: 'NdeXvvGPAeAeNsCGO4bxyzuaCSNKtjYK',
+  issuer: 'https://dev-fse.us.auth0.com/',
   algorithms: ['RS256'],
 };
 
@@ -38,22 +38,21 @@ app.use(cors());
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req })  => {
+  context: ({ req }) :any => {
     // simple auth check on every request
     const token = req.headers.authorization;
-    const user = new Promise((resolve, reject) => {
-      jwt.verify(token, getKey, options, (err : any, decoded: any) => {
+    const user = new Promise((resolve, reject) : any=> {
+      jwt.verify(token, getKey, options, (err : any, decoded: any):any => {
         if (err) {
           return reject(err);
         }
-        return resolve(decoded.email);
+        return resolve((decoded as any).email);
         
       });
     });
 
-    return {
-      user,
-    };
+    return { user };
+    
   },
 });
 

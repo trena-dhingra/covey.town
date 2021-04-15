@@ -1,4 +1,3 @@
-import { userInfo } from 'os';
 import { AuthenticationError } from 'apollo-server-express';
 import { userModel as User } from '../data/models/users/user.model.server';
 import {
@@ -157,9 +156,9 @@ const resolvers = {
         throw error;
       }
     },
-    addFriend: async (_: any, args: any, { user }) => {
+    addFriend: async (_: any, args: any, context:any) => {
       try {
-        const email = await user;
+        const email = await context.user;
         await User.updateOne(
           { username: args.input.userNameTo },
           { $push: { requests: args.input.userNameFrom } },
@@ -189,10 +188,14 @@ const resolvers = {
      * @param args represents the arguments to the function
      * @returns TownJoinResponse
      */
-    townJoinRequest: async (_: any, args: any) => await townJoinHandler({
-      userName: args.input.userName,
-      coveyTownID: args.input.coveyTownID,
-    }),
+    townJoinRequest: async (_: any, args: any) => {
+      const response = await townJoinHandler({
+        userName: args.input.userName,
+        coveyTownID: args.input.coveyTownID,
+      });
+      return response;
+    }
+    ,
 
     /**
      *  Resolver to handle town create request.
@@ -200,10 +203,19 @@ const resolvers = {
      * @param args represents the arguments to the function
      * @returns TownCreateResponse
      */
-    townCreateRequest: async (_: any, args: any) => await townCreateHandler({
-      friendlyName: args.input.friendlyName,
-      isPubliclyListed: args.input.isPubliclyListed,
-    }),
+    townCreateRequest: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;
+        console.log(email);
+        return await townCreateHandler({
+          friendlyName: args.input.friendlyName,
+          isPubliclyListed: args.input.isPubliclyListed,
+        });
+      } catch (error) {
+        console.log(error);
+        throw new AuthenticationError('You must be logged in to do this');
+      }
+    },
 
     townDeleteRequest: async (_: any, args: any) => {
       const response = await townDeleteHandler({
