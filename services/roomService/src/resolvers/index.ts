@@ -110,35 +110,35 @@ const resolvers = {
     updateUser: async (_: any, args: any, context: any) => {
       try {
         const email = await context.user;
-        let user = await User.findOne({ id: args.input.id });
+        let user = await User.findOne({ id: args.input.email });
         if (user !== undefined) {
           if (args.input.bio !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, {
+            user = await User.findByIdAndUpdate(args.input.email, {
               bio: args.input.bio,
             });
           }
           if (args.input.location !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, {
+            user = await User.findByIdAndUpdate(args.input.email, {
               location: args.input.location,
             });
           }
           if (args.input.occupation !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, {
+            user = await User.findByIdAndUpdate(args.input.email, {
               occupation: args.input.occupation,
             });
           }
           if (args.input.instagramLink !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, {
+            user = await User.findByIdAndUpdate(args.input.email, {
               instagramLink: args.input.instagramLink,
             });
           }
           if (args.input.facebookLink !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, {
+            user = await User.findByIdAndUpdate(args.input.email, {
               facebookLink: args.input.facebookLink,
             });
           }
           if (args.input.linkedInLink !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, {
+            user = await User.findByIdAndUpdate(args.input.email, {
               linkedInLink: args.input.linkedInLink,
             });
           }
