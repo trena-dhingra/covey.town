@@ -1,13 +1,17 @@
+import { ApolloServer } from 'apollo-server-express';
 import Express from 'express';
+import mongoose from 'mongoose';
 import CORS from 'cors';
 import http from 'http';
 import { nanoid } from 'nanoid';
-import { AddressInfo } from 'net';
+import io from 'socket.io';
+import connection from '../data/Utils/index';
+import typeDefs from '../typeDefs';
+import resolvers from '../resolvers';
 import * as TestUtils from './TestUtils';
-
+import TownsGraphQLClient from './TownsGraphQlClient';
 import { UserLocation } from '../CoveyTypes';
-import TownsServiceClient from './TownsServiceClient';
-import addTownRoutes from '../router/towns';
+import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
@@ -15,8 +19,11 @@ type TestTownData = {
 };
 
 describe('TownServiceApiSocket', () => {
+  let apolloServer: ApolloServer;
   let server: http.Server;
-  let apiClient: TownsServiceClient;
+  let socketServer: io.Server;
+  let apiClient: TownsGraphQLClient;
+  const context = { user: { email: 'admin@labtrail.app' } };
 
   async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<TestTownData> {
     const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
@@ -36,17 +43,23 @@ describe('TownServiceApiSocket', () => {
   beforeAll(async () => {
     const app = Express();
     app.use(CORS());
-    server = http.createServer(app);
-
-    addTownRoutes(server, app);
-    server.listen();
-    const address = server.address() as AddressInfo;
-
-    apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+    apolloServer = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: () => (context),
+    });
+    apiClient = new TownsGraphQLClient(apolloServer);
+    await connection();
+    apolloServer.applyMiddleware({ app, path: '/graphql' });
+    server = app.listen();
+    socketServer = new io.Server(server, { cors: { origin: '*' } });
+    socketServer.on('connection', townSubscriptionHandler);
   });
   afterAll(async () => {
-    server.close();
+    await mongoose.connection.close();
     TestUtils.cleanupSockets();
+    socketServer.close();
+    server.close();
   });
   afterEach(() => {
     TestUtils.cleanupSockets();
