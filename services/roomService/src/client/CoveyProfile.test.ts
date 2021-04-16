@@ -1,5 +1,6 @@
 import { createTestClient } from 'apollo-server-testing';
 import { ApolloServer } from 'apollo-server-express';
+import mongoose from 'mongoose';
 import {
   GraphQLResponse,
 } from 'apollo-server-types';
@@ -35,6 +36,9 @@ beforeAll(async () => {
   await connection();
 });
 
+afterAll(async () => {
+  await mongoose.connection.close();
+});
 describe('Testing queries', () => {
   let testUser: { email: string; username: string; password?: string; };
   let createUserResponse: GraphQLResponse;
@@ -96,7 +100,7 @@ describe('Testing queries', () => {
       bio: 'MSCS student at Northeastern University',
     };
     const updateUserResponse = await mutate({ mutation: updateUserMutation, variables: { input: updateUserInput } });
-    expect(updateUserResponse.data?.updateUser.bio).toBe('MSCS student at Northeastern University');
+    expect(updateUserResponse.data.updateUser.bio).toBe('MSCS student at Northeastern University');
     expect(createUserResponse.data?.signUp.email).toBe('testUser123@gmail.com');
     
   });
@@ -115,12 +119,12 @@ describe('Testing queries', () => {
       linkedInLink: 'https://www.linkedin.com/test.user/',
     };
     const updateUserResponse = await mutate({ mutation: updateUserMutation, variables: { input: updateUserInput } });
-    expect(updateUserResponse.data?.updateUser.bio).toBe('MSCS student at Northeastern University');
-    expect(updateUserResponse.data?.updateUser.location).toBe('Boston');
-    expect(updateUserResponse.data?.updateUser.occupation).toBe('SDE');
-    expect(updateUserResponse.data?.updateUser.instagramLink).toBe('https://www.instagram.com/test.user/');
-    expect(updateUserResponse.data?.updateUser.facebookLink).toBe('https://www.facebook.com/test.user/');
-    expect(updateUserResponse.data?.updateUser.linkedInLink).toBe('https://www.linkedin.com/test.user/');
+    expect(updateUserResponse.data.updateUser.bio).toBe('MSCS student at Northeastern University');
+    expect(updateUserResponse.data.updateUser.location).toBe('Boston');
+    expect(updateUserResponse.data.updateUser.occupation).toBe('SDE');
+    expect(updateUserResponse.data.updateUser.instagramLink).toBe('https://www.instagram.com/test.user/');
+    expect(updateUserResponse.data.updateUser.facebookLink).toBe('https://www.facebook.com/test.user/');
+    expect(updateUserResponse.data.updateUser.linkedInLink).toBe('https://www.linkedin.com/test.user/');
   });
 
 });

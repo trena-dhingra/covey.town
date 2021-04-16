@@ -2,11 +2,16 @@ import Express from 'express';
 import CORS from 'cors';
 import http from 'http';
 import { nanoid } from 'nanoid';
+import io from 'socket.io';
 import assert from 'assert';
-import { AddressInfo } from 'net';
+import mongoose from 'mongoose';
+import { ApolloServer } from 'apollo-server-express';
+import connection from '../data/Utils/index';
+import typeDefs from '../typeDefs';
+import resolvers from '../resolvers';
 
-import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
-import addTownRoutes from '../router/towns';
+import TownsGraphQLClient, {TownListResponse} from './TownsGraphQlClient';
+import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
@@ -28,8 +33,10 @@ function expectTownListMatches(towns: TownListResponse, town: TestTownData) {
 }
 
 describe('TownsServiceAPIREST', () => {
+  let apiClient: TownsGraphQLClient;
   let server: http.Server;
-  let apiClient: TownsServiceClient;
+  let apolloServer: ApolloServer;
+  const context = { user: { email: 'admin@labtrail.app' } };
 
   async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<TestTownData> {
     const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
@@ -49,16 +56,21 @@ describe('TownsServiceAPIREST', () => {
   beforeAll(async () => {
     const app = Express();
     app.use(CORS());
-    server = http.createServer(app);
-
-    addTownRoutes(server, app);
-    await server.listen();
-    const address = server.address() as AddressInfo;
-
-    apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+    apolloServer = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: () => (context),
+    });
+    apiClient = new TownsGraphQLClient(apolloServer);
+    await connection();
+    apolloServer.applyMiddleware({ app, path: '/graphql' });
+    server = app.listen();
+    const socketServer = new io.Server(server, { cors: { origin: '*' } });
+    socketServer.on('connection', townSubscriptionHandler);
   });
   afterAll(async () => {
-    await server.close();
+    server.close();
+    await mongoose.connection.close();
   });
   describe('CoveyTownCreateAPI', () => {
     it('Allows for multiple towns with the same friendlyName', async () => {

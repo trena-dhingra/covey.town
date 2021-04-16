@@ -140,8 +140,8 @@ input townDeleteRequestInput {
 input townUpdateRequestInput {
   coveyTownID: String!
   coveyTownPassword: String!
-  friendlyName: String!
-  isPubliclyListed: Boolean!
+  friendlyName: String
+  isPubliclyListed: Boolean
 }
 
 type TownDeleteResponseEnvelope {

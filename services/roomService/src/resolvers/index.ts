@@ -255,9 +255,9 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    townUpdateRequest: async (_: any, args: any, context: any) => {
+    townUpdateRequest: async (_: void, args: any, context: any) => {
       try {
-        const email = await context.user;
+        await context.user;
         const response = await townUpdateHandler({
           coveyTownID: args.input.coveyTownID,
           coveyTownPassword: args.input.coveyTownPassword,
