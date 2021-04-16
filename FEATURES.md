@@ -101,7 +101,7 @@ My conditions of satisfaction are :
 3. You will be directed to their profile where you can view the user's information. You will also see the 'Add Friend' button. Click on it to add the user as a friend. A request will then be sent to the user which the user can 'Accept' or 'Decline'.
    
    
-**Steps** to add friends (accept requests) in Covey Town - 
+**Steps** to accept/decline friend requests in Covey Town - 
 1. Click on 'Friends' button in the user profile as shown in the screenshot above.
 2. You will then be directed to the user friends page. Here, you will see two list:
   1. Friend List.
