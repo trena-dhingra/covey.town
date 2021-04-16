@@ -1,40 +1,17 @@
+import Express from 'express';
+import CORS from 'cors';
+import http from 'http';
 import { nanoid } from 'nanoid';
+import io from 'socket.io';
 import assert from 'assert';
-import { createTestClient } from 'apollo-server-testing';
-import { ApolloServer } from 'apollo-server-express';
 import mongoose from 'mongoose';
-import {
-  GraphQLResponse,
-} from 'apollo-server-types';
-import {
-  createTownMutation,
-  updateTownMutation,
-  deleteTownMutation,
-  townList,
-} from './TestQueries';
+import { ApolloServer } from 'apollo-server-express';
+import connection from '../data/Utils/index';
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
-import connection from '../data/Utils/index';
 
-
-const context = { user: {email: 'admin@labtrail.app'} };
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: () => (context),
-});
-
-const { query, mutate } = createTestClient(server);
-
-
-beforeAll(async () => {
-  await connection();
-});
-
-afterAll(async () => {
-  await mongoose.connection.close();
-});
+import TownsGraphQLClient, {TownListResponse} from './TownsGraphQlClient';
+import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
@@ -56,26 +33,45 @@ function expectTownListMatches(towns: TownListResponse, town: TestTownData) {
 }
 
 describe('TownsServiceAPIREST', () => {
+  let apiClient: TownsGraphQLClient;
+  let server: http.Server;
+  let apolloServer: ApolloServer;
+  const context = { user: { email: 'admin@labtrail.app' } };
 
   async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<TestTownData> {
     const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
       `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
-    const { data } = await mutate({
-      mutation: createTownMutation,
-      variables: {
-        input: {
-          friendlyName,
-          isPubliclyListed: isPublic,
-        }},
+    const ret = await apiClient.createTown({
+      friendlyName,
+      isPubliclyListed: isPublic,
     });
     return {
       friendlyName,
       isPubliclyListed: isPublic,
-      coveyTownID: data.townCreateRequest.response.coveyTownID,
-      townUpdatePassword: data.townCreateRequest.response.coveyTownPassword,
+      coveyTownID: ret.coveyTownID,
+      townUpdatePassword: ret.coveyTownPassword,
     };
   }
 
+  beforeAll(async () => {
+    const app = Express();
+    app.use(CORS());
+    apolloServer = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: () => (context),
+    });
+    apiClient = new TownsGraphQLClient(apolloServer);
+    await connection();
+    apolloServer.applyMiddleware({ app, path: '/graphql' });
+    server = app.listen();
+    const socketServer = new io.Server(server, { cors: { origin: '*' } });
+    socketServer.on('connection', townSubscriptionHandler);
+  });
+  afterAll(async () => {
+    server.close();
+    await mongoose.connection.close();
+  });
   describe('CoveyTownCreateAPI', () => {
     it('Allows for multiple towns with the same friendlyName', async () => {
       const firstTown = await createTownForTesting();
@@ -100,11 +96,12 @@ describe('TownsServiceAPIREST', () => {
       const privTown1 = await createTownForTesting(undefined, false);
       const pubTown2 = await createTownForTesting(undefined, true);
       const privTown2 = await createTownForTesting(undefined, false);
-      const { data } = await query({ query: townList });
-      expectTownListMatches(data.townList.response, pubTown1);
-      expectTownListMatches(data.townList.response, pubTown2);
-      expectTownListMatches(data.townList.response, privTown1);
-      expectTownListMatches(data.townList.response, privTown2);
+
+      const towns = await apiClient.listTowns();
+      expectTownListMatches(towns, pubTown1);
+      expectTownListMatches(towns, pubTown2);
+      expectTownListMatches(towns, privTown1);
+      expectTownListMatches(towns, privTown2);
 
     });
     it('Allows for multiple towns with the same friendlyName', async () => {
@@ -113,11 +110,11 @@ describe('TownsServiceAPIREST', () => {
       const pubTown2 = await createTownForTesting(pubTown1.friendlyName, true);
       const privTown2 = await createTownForTesting(pubTown1.friendlyName, false);
 
-      const { data } = await query({ query: townList });
-      expectTownListMatches(data.townList.response, pubTown1);
-      expectTownListMatches(data.townList.response, pubTown2);
-      expectTownListMatches(data.townList.response, privTown1);
-      expectTownListMatches(data.townList.response, privTown2);
+      const towns = await apiClient.listTowns();
+      expectTownListMatches(towns, pubTown1);
+      expectTownListMatches(towns, pubTown2);
+      expectTownListMatches(towns, privTown1);
+      expectTownListMatches(towns, privTown2);
     });
   });
 

@@ -1,9 +1,23 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import assert from 'assert';
+import { createTestClient } from 'apollo-server-testing';
+import { ApolloServer } from 'apollo-server-express';
+import {
+  createTownMutation,
+  updateTownMutation,
+  deleteTownMutation,
+  townList,
+  joinTownMutation,
+} from './TestQueries';
 import { UserLocation } from '../CoveyTypes';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+
+/**
+ * Response from the server for a Town list request
+ */
+export interface TownListResponse {
+  towns: CoveyTownInfo[];
+}
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -53,13 +67,6 @@ export interface TownCreateResponse {
 }
 
 /**
- * Response from the server for a Town list request
- */
-export interface TownListResponse {
-  towns: CoveyTownInfo[];
-}
-
-/**
  * Payload sent by the client to delete a Town
  */
 export interface TownDeleteRequest {
@@ -95,54 +102,69 @@ export type CoveyTownInfo = {
   maximumOccupancy: number
 };
 
-export default class TownsServiceClient {
-  private _axios: AxiosInstance;
+/* const { query, mutate } = createTestClient(server); */
+export default class TownsGraphQlClient {
 
-  /**
-   * Construct a new Towns Service API client. Specify a serviceURL for testing, or otherwise
-   * defaults to the URL at the environmental variable REACT_APP_ROOMS_SERVICE_URL
-   * @param serviceURL
-   */
-  constructor(serviceURL?: string) {
-    const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
-    assert(baseURL);
-    this._axios = axios.create({ baseURL });
-  }
+  private query;
 
-  static unwrapOrThrowError<T>(response: AxiosResponse<ResponseEnvelope<T>>, ignoreResponse = false): T {
-    if (response.data.isOK) {
-      if (ignoreResponse) {
-        return {} as T;
-      }
-      assert(response.data.response);
-      return response.data.response;
-    }
-    throw new Error(`Error processing request: ${response.data.message}`);
+  private mutate;
+  
+  constructor(server: ApolloServer){
+    const response = createTestClient(server);
+    this.query = response.query;
+    this.mutate = response.mutate;
   }
 
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<TownCreateResponse>>('/towns', requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+    const { data } = await this.mutate({
+      mutation: createTownMutation,
+      variables: { input: requestData },
+    });
+    if (data.townCreateRequest.isOK) {
+      return data.townCreateRequest.response;
+    }
+    throw new Error(`Error processing request: ${data.townCreateRequest.message}`);
   }
 
   async updateTown(requestData: TownUpdateRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}`, requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+    const { data } = await this.mutate({
+      mutation: updateTownMutation,
+      variables: { input: requestData },
+    });
+    if (!data || !data.townUpdateRequest.isOK) {
+      throw new Error(`Error processing request: ${ data.townUpdateRequest.message}`);
+    }
+    return data.townUpdateRequest;
   }
 
   async deleteTown(requestData: TownDeleteRequest): Promise<void> {
-    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}/${requestData.coveyTownPassword}`);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+    const { data } = await this.mutate({
+      mutation: deleteTownMutation,
+      variables: { input: requestData },
+    });
+    if (!data.townDeleteRequest.isOK) {
+      throw new Error(`Error processing request: ${data.townDeleteRequest.message}`);
+    }
+    return data.townDeleteRequest;
   }
 
   async listTowns(): Promise<TownListResponse> {
-    const responseWrapper = await this._axios.get<ResponseEnvelope<TownListResponse>>('/towns');
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+    const { data } = await this.query({ query: townList });
+    return data.townList.response;
   }
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
-    const responseWrapper = await this._axios.post('/sessions', requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
-  }
+    const { data } = await this.mutate({
+      mutation: joinTownMutation,
+      variables: { input: requestData},
+    });
 
+    if (data.townJoinRequest.isOK) {
+      return data.townJoinRequest.response;
+    }
+    throw new Error(`Error processing request: ${data.townJoinRequest.message}`);
+  }
 }
+
+
+
