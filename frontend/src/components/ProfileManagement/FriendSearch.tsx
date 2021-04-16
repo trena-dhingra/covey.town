@@ -21,7 +21,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 
-import {findAllUsersByUserName, searchUserByEmail, searchUserByName, User} from "../../graphql/queries";
+import {findAllUsersByUserName, searchUserByEmail, User} from "../../graphql/queries";
 
 
 export default function FriendSearch(): JSX.Element {
@@ -34,12 +34,10 @@ export default function FriendSearch(): JSX.Element {
   const [username, setUsername] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const toast = useToast();
-  const [currentUserName, setCurrentUserName] = useState()
 
   useEffect(() => {
     const findUser = async () => {
-      const currentUser = await searchUserByEmail(user.email);
-      setCurrentUserName(currentUser.username);
+      await searchUserByEmail(user.email);
     }
     findUser();
   });

@@ -10,7 +10,6 @@ import {
   HStack,
   Spacer,
   useToast,
-  Link
 } from "@chakra-ui/react"
 import { useHistory, withRouter } from "react-router-dom";
 import {

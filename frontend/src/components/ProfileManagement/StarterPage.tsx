@@ -1,10 +1,10 @@
 import React from "react";
-import { Box, Image, Heading, Flex, Center } from "@chakra-ui/react";
+import { Image, Heading, Center } from "@chakra-ui/react";
 
 export default function StarterPage(): JSX.Element {
   return (
     <>
-    
+
       <Heading
         color='blue.500'
         as='h2'
@@ -27,7 +27,7 @@ export default function StarterPage(): JSX.Element {
           mt= {5}
         />
       </Center>
-      
+
     </>
   );
 }
