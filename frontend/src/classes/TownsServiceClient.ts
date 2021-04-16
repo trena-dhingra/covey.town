@@ -1,5 +1,3 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import assert from 'assert';
 import { ServerPlayer } from './Player';
 
 /**
