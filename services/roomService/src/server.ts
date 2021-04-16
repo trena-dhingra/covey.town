@@ -4,7 +4,6 @@ import { ApolloServer } from 'apollo-server-express';
 import io from 'socket.io';
 import * as jwt from 'jsonwebtoken';
 import jwksRsa, { CertSigningKey, SigningKey } from 'jwks-rsa';
-import { AnyCnameRecord } from 'dns';
 import {
   townSubscriptionHandler,
 } from './requestHandlers/CoveyTownRequestHandlers';

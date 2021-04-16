@@ -254,7 +254,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   );
 }
 
-export function EmbeddedTwilioAppWrapper() {
+export function EmbeddedTwilioAppWrapper() : JSX.Element {
   const { error, setError } = useAppState();
   const [onDisconnect, setOnDisconnect] = useState<Callback | undefined>();
   const connectionOptions = useConnectionOptions();

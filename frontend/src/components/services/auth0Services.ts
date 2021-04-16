@@ -1,4 +1,4 @@
-export default async function changePassword(email: string) {
+export default async function changePassword(email: string) : Promise<unknown> {
   const requestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

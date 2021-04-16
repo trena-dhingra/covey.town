@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import assert from "assert";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   Box,
   Button,
@@ -32,7 +31,6 @@ interface TownSelectionProps {
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const { user } = useAuth0();
   const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
