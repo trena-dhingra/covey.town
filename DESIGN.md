@@ -156,5 +156,11 @@ auth0Service.ts
 
 ---
 
+UML Sequence Diagrams
 
 ---
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/signup.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/login_logout.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/user_update_delete.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/search.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/friends.jpeg"/>
