@@ -79,3 +79,19 @@ Server.ts
 Login
 
 ---
+
+TownSelection.tsx
+
+- We have modified the call to createTown and listTown migrating it from REST API call to GraphQL call.
+
+TownSelection.Part1.test.tsx, TownSelection.Part2.test.tsx, TownSelection.Part3.test.tsx
+
+- We have modified the tests to match out migration from REST to GraphQL.
+
+TownSettings.test.tsx
+
+- We have modified the tests to match out migration from REST to GraphQL.
+
+TownSettings.tsx
+
+- We have modified the call to updateTown and deleteTown migrating it from REST API call to GraphQL call.
