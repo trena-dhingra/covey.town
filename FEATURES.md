@@ -54,6 +54,10 @@ Attached below is a screenshot to help you navigate :
 
 <img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/features.png"/>
 
+Attached below is a screenshot for the friends page :
+
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/friendRequests.JPG"/>
+
 **Steps to Update profile information -**
 1. You can edit the profile information by adding/updating or removing information such as - 
    1. Bio.
