@@ -1,5 +1,12 @@
 import gql from 'graphql-tag';
-import { TownCreateRequest, TownJoinRequest, TownDeleteRequest, TownUpdateRequest } from '../classes/TownsServiceClient';
+import {
+  TownCreateRequest,
+  TownJoinRequest,
+  TownDeleteRequest,
+  TownUpdateRequest,
+  TownCreateResponse,
+  TownListResponse, TownJoinResponse
+} from '../classes/TownsServiceClient';
 import client from './client';
 
 /**
@@ -31,7 +38,7 @@ export interface RejectFriendRequest {
  */
 export interface UpdateUserRequest {
   id: string
-  userName: string
+  username: string
   email: string
   bio: string
   location: string
@@ -54,6 +61,16 @@ export interface SearchUserRequest {
   username: string;
 }
 
+export interface TownUpdateResponse{
+  isOK: boolean;
+  message : string;
+}
+
+export interface TownDeleteResponse{
+  isOK: boolean;
+  message : string;
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -67,9 +84,9 @@ export interface User {
   instagramLink: string;
   facebookLink: string;
   linkedInLink: string;
-  requests: [];
-  friends: [],
-  sentRequests: [],
+  requests: string[];
+  friends: string[],
+  sentRequests: string[],
 }
 
 
@@ -262,17 +279,17 @@ const rejectFriendMutation = gql`
   }
 `;
 
-export const findAllUserProfiles = async (): Promise<any> => {
+export const findAllUserProfiles = async (): Promise<User[]> => {
   const { data } = await client.query({ query: findAllUsers });
   return data.users;
 };
 
-export const findAllUsersByUserName = async (username: string): Promise<any> => {
+export const findAllUsersByUserName = async (username: string): Promise<User[]> => {
   const { data } = await client.query({ query: findAllUsersByUserNameQuery, variables: { username } });
   return data.searchUserByUserName;
 };
 
-export const searchUserByUserName = async (userName: string): Promise<any> => {
+export const searchUserByUserName = async (userName: string): Promise<User[]> => {
   const { data } = await client.query({
     query: searchUserByUserNameQuery,
     variables: { userName },
@@ -280,7 +297,7 @@ export const searchUserByUserName = async (userName: string): Promise<any> => {
   return data.searchUserByUserName;
 }
 
-export const searchUserByEmail = async (email: string): Promise<any> => {
+export const searchUserByEmail = async (email: string): Promise<User> => {
   const { data } = await client.query({
     query: searchUserByEmailQuery,
     variables: { email },
@@ -288,7 +305,7 @@ export const searchUserByEmail = async (email: string): Promise<any> => {
   return data.searchUserByEmail;
 }
 
-export const searchUserByName = async (username: string): Promise<any> => {
+export const searchUserByName = async (username: string): Promise<User> => {
   const { data } = await client.query({
     query: searchUserByNameQuery,
     variables: { username },
@@ -296,7 +313,7 @@ export const searchUserByName = async (username: string): Promise<any> => {
   return data.searchUserByName;
 }
 
-export const addFriend = async (payload: AddFriendRequest): Promise<any> => {
+export const addFriend = async (payload: AddFriendRequest): Promise<boolean> => {
   const { data } = await client.mutate({
     mutation: addFriendMutation,
     variables: {input: payload},
@@ -304,7 +321,7 @@ export const addFriend = async (payload: AddFriendRequest): Promise<any> => {
   return data.addFriend;
 }
 
-export const acceptFriend = async (payload: AcceptFriendRequest): Promise<any> => {
+export const acceptFriend = async (payload: AcceptFriendRequest): Promise<boolean> => {
   const { data } = await client.mutate({
     mutation: acceptFriendMutation,
     variables: {input: payload},
@@ -312,7 +329,7 @@ export const acceptFriend = async (payload: AcceptFriendRequest): Promise<any> =
   return data.acceptFriend;
 }
 
-export const rejectFriend = async (payload: RejectFriendRequest): Promise<any> => {
+export const rejectFriend = async (payload: RejectFriendRequest): Promise<boolean> => {
   const { data } = await client.mutate({
     mutation: rejectFriendMutation,
     variables: {input: payload},
@@ -320,8 +337,7 @@ export const rejectFriend = async (payload: RejectFriendRequest): Promise<any> =
   return data.rejectFriend;
 }
 
-export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
-  console.log(payload)
+export const updateUser = async (payload: UpdateUserRequest): Promise<User> => {
   const { data } = await client.mutate({
     mutation: updateUserMutation,
     variables: {input: payload},
@@ -329,7 +345,7 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
   return data.updateUser;
 }
 
-export const deleteUser = async (payload: DeleteUserRequest): Promise<any> => {
+export const deleteUser = async (payload: DeleteUserRequest): Promise<boolean> => {
   const { data } = await client.mutate({
     mutation: deleteUserMutation,
     variables: {input: payload},
@@ -342,13 +358,13 @@ export const deleteUser = async (payload: DeleteUserRequest): Promise<any> => {
 export default class GraphqlServiceClient {
   private graphqlClient = client;
 
-  listTown = async (): Promise<any> => {
+  listTown = async (): Promise<TownListResponse> => {
     const { data } = await this.graphqlClient.query({ query: townList });
     return data.townList.response;
   };
 
 
-  createTown = async (payload: TownCreateRequest): Promise<any> => {
+  createTown = async (payload: TownCreateRequest): Promise<TownCreateResponse> => {
     const { data } = await this.graphqlClient.mutate({
       mutation: createTownMutation,
       variables: { input: payload },
@@ -359,7 +375,7 @@ export default class GraphqlServiceClient {
     throw new Error(`Error processing request: ${data.townCreateRequest.message}`);
   };
 
-  joinTown = async (payload: TownJoinRequest): Promise<any> => {
+  joinTown = async (payload: TownJoinRequest): Promise<TownJoinResponse> => {
     const { data } = await this.graphqlClient.mutate({
       mutation: joinTownMutation,
       variables: { input: payload }
@@ -371,7 +387,7 @@ export default class GraphqlServiceClient {
     throw new Error(`Error processing request: ${data.townJoinRequest.message}`);
   };
 
-  deleteTown = async (payload: TownDeleteRequest): Promise<any> => {
+  deleteTown = async (payload: TownDeleteRequest): Promise<TownDeleteResponse> => {
     const { data } = await this.graphqlClient.mutate({
       mutation: deleteTownMutation,
       variables: { input: payload },
@@ -382,7 +398,7 @@ export default class GraphqlServiceClient {
     return data.townDeleteRequest;
   }
 
-  updateTown = async (payload: TownUpdateRequest): Promise<any> => {
+  updateTown = async (payload: TownUpdateRequest): Promise<TownUpdateResponse> => {
   const { data } = await client.mutate({
     mutation: updateTownMutation,
     variables: { input: payload },

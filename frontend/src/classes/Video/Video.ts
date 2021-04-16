@@ -1,6 +1,5 @@
 import DebugLogger from '../DebugLogger';
 import { TownJoinResponse } from '../TownsServiceClient';
-import useCoveyAppState from '../../hooks/useCoveyAppState';
 import GraphqlServiceClient from '../../graphql/queries';
 
 export default class Video {
@@ -25,7 +24,7 @@ export default class Video {
   private _townFriendlyName: string | undefined;
 
   private _isPubliclyListed: boolean | undefined;
-  
+
 
   pauseGame: () => void = ()=>{};
 

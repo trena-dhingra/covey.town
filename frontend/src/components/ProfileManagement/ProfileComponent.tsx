@@ -111,7 +111,7 @@ function ProfileComponent(): JSX.Element {
       setOccupation(userInfo.occupation);
     }
     const payload : UpdateUserRequest =
-      { id: ids, userName: user.name, bio : bio1,
+      { id: ids, username: user.name, bio : bio1,
         email: user.email, facebookLink: facebookLink1,
         linkedInLink: linkedInLink1, instagramLink: instagramLink1,
       location: location1, occupation: occupation1, password: user.password
@@ -198,7 +198,7 @@ function ProfileComponent(): JSX.Element {
                   mt={4}
                   color='white'
                   onClick={()=>{
-                    changePassword(user.email).then(r=>{
+                    changePassword(user.email).then(()=>{
                         toastWindow();
                       })}}
                 >
@@ -236,7 +236,6 @@ function ProfileComponent(): JSX.Element {
                         <FormLabel>Occupation</FormLabel>
                         <Input placeholder="Occupation" value={occupation1 || ''}
                                onChange={(event) => {
-                                 console.log(event.target.value)
                                  setOccupation1(event.target.value)}
                                } />
                       </FormControl>

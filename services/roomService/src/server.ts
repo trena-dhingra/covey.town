@@ -49,12 +49,22 @@ const apolloServer = new ApolloServer({
         }
         return resolve((decoded as any).email);
 
+<<<<<<< HEAD
+server.listen(process.env.PORT || 8081, () => {
+  const address = server.address() as AddressInfo;
+  // eslint-disable-next-line no-console
+  console.log(`Listening on ${address.port}`);
+  if (process.env.DEMO_TOWN_ID) {
+    CoveyTownsStore.getInstance().createTown(process.env.DEMO_TOWN_ID, false);
+  }
+=======
       });
     });
 
     return { user };
 
   },
+>>>>>>> 221f09ef709b4c1b16747eb73360a88d57456fec
 });
 
 
