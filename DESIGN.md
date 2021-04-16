@@ -95,3 +95,66 @@ TownSettings.test.tsx
 TownSettings.tsx
 
 - We have modified the call to updateTown and deleteTown migrating it from REST API call to GraphQL call.
+
+---
+
+App.tsx
+
+---
+
+---
+
+FriendSearch.tsx
+
+---
+
+Implemented component for searching a friend from the list of users.
+
+---
+
+InviteFriendComponent.tsx
+
+---
+
+Implemented component to add a friend if the user is not already a friend or  invite user if user is already a friend of user.
+Added 'Add as friend' and 'Invite Button'.
+Shows all the information of the user who is being add as a friend or invited.
+
+---
+
+ProfileComponent.tsx
+
+---
+
+Implemented component to see profile of a user which consists of information like email, Location, Occupation, Linkedin Link, Facebook link, Instagram Link. 
+It has feature to deactivate the account, update the user profile, see friend list and friend requests and Change password.
+Added buttons for Friend List, Update profile, Change Password and Delete account.
+Added search bar for searching users.
+
+---
+
+StarterPage.tsx
+
+---
+
+Home Page of our application.
+Added Log in button.
+
+
+---
+
+FriendsPage.tsx
+
+---
+
+Implemented Friends page so the user can see the friend list and friend requests.
+Friend request can be accepted or denied.
+
+---
+
+auth0Service.ts
+
+---
+
+
+---
