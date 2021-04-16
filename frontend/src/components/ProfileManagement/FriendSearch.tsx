@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
+import { useHistory } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 import {
   Text,
   InputGroup,
@@ -18,15 +20,29 @@ import {
   Spacer,
   useToast
 } from "@chakra-ui/react";
-  
-import { findAllUsersByUserName, User } from "../../graphql/queries";
+
+import {findAllUsersByUserName, searchUserByEmail, searchUserByName, User} from "../../graphql/queries";
+
 
 export default function FriendSearch(): JSX.Element {
 
+
+
+  const history = useHistory();
+  const { user } = useAuth0();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [username, setUsername] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const toast = useToast();
+  const [currentUserName, setCurrentUserName] = useState()
+
+  useEffect(() => {
+    const findUser = async () => {
+      const currentUser = await searchUserByEmail(user.email);
+      setCurrentUserName(currentUser.username);
+    }
+    findUser();
+  });
 
   const handleSearch = async () => {
     let userList;
@@ -69,10 +85,10 @@ export default function FriendSearch(): JSX.Element {
               <ModalCloseButton />
               <ModalBody>
                 <Box mt={5} w='90%'>
-                      {users.map((user) => (
-                        <Box bg="white" p={5} color="black" key={user.id} borderWidth="1px" borderRadius="lg" >
+                      {users.map((userObj) => (
+                        <Box bg="white" p={5} color="black" key={userObj.id} borderWidth="1px" borderRadius="lg" >
                           <Flex>
-                            <Text textAlign="left">{user.username}</Text>
+                            <Text textAlign="left" onClick={()=>{history.push(`/users/${userObj.username}`);}}>{userObj.username}</Text>
                               <Spacer/>
                           </Flex>
                         </Box>
