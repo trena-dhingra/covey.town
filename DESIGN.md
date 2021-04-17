@@ -1,12 +1,48 @@
+**DESIGN**
+The main goal of our project is to provide support to real persistence by creating an authentication layer, maintain and manage user profiles. We have used Auth0 for authentication and MongoDB (NoSQL database) for data storage. 
+We chose to use GraphQL over REST APIs considering the advantages of GraphQL. GraphQL allows faster performance compared to REST APIs, No overfetching or underfetching issues and more efficient.
+
+Brief overview of the new changes added to the codebase are as follows :  
+Frontend : 
+- Authentication of the user using Auth0 - SignUp, Login, Logout.
+- Created appropriate components in frontend to save/view/edit/delete user profiles.
+- Created appropirate components in frontend to implement add friend/ accept friend / delete friend.
+- Created Apollo Client in front-end to make GraphQL API calls to Apollo GraphQL backend server.
+- Implemented functionalities to make GraphQL API calls for user profile functionalities and friend functionalities.
+- Refactored the existing REST API calls for Towns to use GraphQL queries and mutations.
+- Provided authentication and authorization of GraphQL APIs using JSON Web token and Auth0 access token. 
+- Refactored the existing test cases for Covey Town to use GraphQL client instead of REST service client.
+ We also 
+Backend : 
+- Created GraphQL Schema and resolvers for User profile functionalities : view/edit/delete user profiles.
+- Created GraphQL schema and resolvers for friend functionalities : add friend/accept friend/delete friend.
+- Created GraphQL schema and resolvers for Covey Town functionalities : create town / delete town / join town / list town/ update town.
+- Provided authentication and authorization of GraphQL APIs using JSON Web token and Auth0 access token. 
+- Refactored the existing test cases for Covey Town to use GraphQL server and GraphQL client.
+- Created new test cases to test all the user profile and friend functionalities in backend.
+
+---
+
+UML Sequence Diagrams
+
+---
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/signup.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/login_logout.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/user_update_delete.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/search.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/friends.jpeg"/>
+
+**DETAILED DESIGN**
+
 **BACKEND**
+FORMAT : Folder name -> file name.
+---
+
+resolvers -> index.ts
 
 ---
 
-Resolvers -> index.ts
-
----
-
-- We defined the GraphQL queries and mutations for user and town operations. The user operations include update, delete and search user using different fields such as username, email etc. Since we have used GraphQL, we also migrated all the existing REST APIs to GraphQL mutations and so this file has GraphQL mutations for create, list, update, join and delete towns.
+- We defined resolvers for GraphQL queries and mutations for user profile and town functionalities. The user profile operations include update user, delete user, search user using different fields such as username and email, add friend request, accept friend request, delete friend request.Since we have used GraphQL, we have also chose to migrate all the existing REST APIs to GraphQL. So this file contains resolvers for Queries/GraphQL mutations for create, list, update, join and delete towns.
 
 ---
 
@@ -14,7 +50,7 @@ typeDefs -> index.ts
 
 ---
 
-- We defined the GraphQL types in this file. We have type Query which has all the queries, type Mutation which has all the modifications we can make such as update, delete etc. We also have type for User, Player, UserLocation, Towns etc. Each of the mutations has an input and response and we have defined those when necessary.
+- This file contains the GraphQL schema. We have type Query which has all the queries, type Mutation which has all the modifications we can make such as update, delete user etc. We also have type for User, Player, UserLocation, Towns etc. Each of the mutations has an input and response and we have defined those when necessary. This is one of the biggest advantage of using GraphQL because it makes all of the requests from frontend strictly typed.
 
 ---
 
@@ -24,19 +60,32 @@ Client
 
 CoveyProfileTest.ts
 
-- This file contains the tests for user functionality.
+- This file contains the tests for user profile and friend management functionalities. We have used apollo-server-testing npm package to mock the apollo server and test the graphQL resolvers.  
 
-CoveyTownREST.test.ts
+CoveyTownTest.test.ts
 
--
+- This file contains the test for Covey Towns. 
+- Changes done in this file : 
+1. Change to Apollo Server , 
+2. User GraphQL client service instead of using REST service
+We have made these changes because our whole project is now using GraphQL service instead of REST service.
+We have made the change efficiently such that this file does not have many changes.
 
 CoveyTownSocket.test.ts
-
--
+- This file contains the test for Covey Towns Socket functionalities. 
+- Changes done in this file : 
+1. Change to Apollo Server , 
+2. User GraphQL client service instead of using REST service
+We have made these changes because our whole project is now using GraphQL service instead of REST service.
+We have made the change efficiently such that this file does not have many changes.
 
 TestQueries.ts
 
-- Test GraphQL Queries used for testing in CoveyProfileTest.ts .
+- Test GraphQL Queries contains the necessary queries and mutation calls that are required to make API calls to Apollo server.
+These queries and mutations are used by the other test files in this folder.
+
+TownsGraphQLClient.ts
+- This file contains the class to create the graphQL client and to make GraphQL API calls to server. The functionalities in this file are used by the town test files.
 
 ---
 
@@ -58,19 +107,26 @@ Utils -> index.ts
 
 ---
 
-GraphQLServer.ts
+server.ts
 
 ---
 
-- We are making a connection to the Apollo Server.
+- This file contains the necessary changes to shift to GraphQL server.
+Apollo server is used for GraphQL.
+This file also contains changes necessary to ensure that the calls made to the backend are authenticated and authorized. 
+For this we have used JSON WEB Token methods and passed the appropriate information as context to the GraphQL resolvers.
 
 ---
 
-Server.ts
+Existing files deleted : 
 
 ---
 
--
+router -> town.ts
+- This existing file was deleted because it contained all REST API calls. Since we have migrated to GraphQL , this file was not used anymore. So we have deleted it.
+
+client -> TownsServiceClient.ts
+- This existing file was deleted because it contained the rest service client making REST API calls , but since we have migrated to GraphQL we have made a seperate file called TownsGraphQLClient.ts to handle the GraphQL API calls. So this file was innappropriate and deleted.
 
 **FRONTEND**
 
@@ -82,29 +138,32 @@ Login
 
 TownSelection.tsx
 
-- We have modified the call to createTown and listTown migrating it from REST API call to GraphQL call.
+- Create town and list town that was using REST API client was changed to use GraphQL API client - since we are migrating our project to GraphQL.
 
 TownSelection.Part1.test.tsx, TownSelection.Part2.test.tsx, TownSelection.Part3.test.tsx
 
-- We have modified the tests to match out migration from REST to GraphQL.
+- The only modification that was done to tests was to use our GraphQL API client instead of REST API client -  to match out migration from REST to GraphQL. There were no other changes done to the test cases other than this.
 
 TownSettings.test.tsx
 
-- We have modified the tests to match out migration from REST to GraphQL.
+- The only modification that was done to tests was to use our GraphQL API client instead of REST API client -  to match out migration from REST to GraphQL. There were no other changes done to the test cases other than this.
 
 TownSettings.tsx
 
-- We have modified the call to updateTown and deleteTown migrating it from REST API call to GraphQL call.
+- Update town and delete town that was using REST API client was changed to use GraphQL API client - since we are migrating our project to GraphQL.
+- CoveyAppState now uses TownsGraphQLClient instead of TownsServiceClient - this was done because of the shift to GraphQL APIs.
 
 ---
 
 App.tsx
 
 ---
+- This file now contains the appropriate changes to include the profile component , friend component , header component and auth0 parameters.
+- We have also made a small change for CoveyAppState to use our new GraphQL client service.
 
 ---
 
-FriendSearch.tsx
+components -> ProfileManagement -> FriendSearch.tsx
 
 ---
 
@@ -112,7 +171,7 @@ FriendSearch.tsx
 
 ---
 
-InviteFriendComponent.tsx
+components -> ProfileManagement -> InviteFriendComponent.tsx
 
 ---
 
@@ -122,7 +181,7 @@ InviteFriendComponent.tsx
 
 ---
 
-ProfileComponent.tsx
+components -> ProfileManagement -> ProfileComponent.tsx
 
 ---
 
@@ -133,7 +192,7 @@ ProfileComponent.tsx
 
 ---
 
-StarterPage.tsx
+components -> ProfileManagement -> StarterPage.tsx
 
 ---
 
@@ -143,7 +202,7 @@ StarterPage.tsx
 
 ---
 
-FriendsPage.tsx
+components -> UserProfiles -> FriendsPage.tsx
 
 ---
 
@@ -155,12 +214,11 @@ FriendsPage.tsx
 auth0Service.ts
 
 ---
-
-UML Sequence Diagrams
+- changes necessary to connect with Auth0.
 
 ---
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/signup.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/login_logout.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/user_update_delete.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/search.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/friends.jpeg"/>
+
+CoveyTypes.ts
+
+---
+- Made a small change to remove the exsisting TownsServiceClient and use our TownsGraphQLClient.
