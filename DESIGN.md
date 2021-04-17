@@ -1,4 +1,6 @@
 **DESIGN**
+
+---
 The main goal of our project is to provide support to real persistence by creating an authentication layer, maintain and manage user profiles. We have used Auth0 for authentication and MongoDB (NoSQL database) for data storage. 
 We chose to use GraphQL over REST APIs considering the advantages of GraphQL. GraphQL allows faster performance compared to REST APIs, No overfetching or underfetching issues and more efficient.
 
