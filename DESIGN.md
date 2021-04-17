@@ -134,7 +134,21 @@ client -> TownsServiceClient.ts
 
 ---
 
-Login
+graphql -> client.ts
+
+---
+- This file contains the code to create Apollo client and authentication context information.
+
+
+---
+graphql -> quries.ts
+
+---
+- This file contains the code to make GraphQL API calls to the Apollo server backend using Apollo Client.
+
+---
+
+components -> Login
 
 ---
 
@@ -213,7 +227,7 @@ components -> UserProfiles -> FriendsPage.tsx
 
 ---
 
-auth0Service.ts
+services -> auth0Service.ts
 
 ---
 - changes necessary to connect with Auth0.
@@ -224,3 +238,10 @@ CoveyTypes.ts
 
 ---
 - Made a small change to remove the exsisting TownsServiceClient and use our TownsGraphQLClient.
+
+---
+
+classes -> TownsServiceClient.ts
+
+---
+- Removed the TownsServiceClient class that used REST APIs. This was removed because we shifted to GraphQL APIs and these changes are present in TownsGraphQLClient class under graphql folder->queries.ts
