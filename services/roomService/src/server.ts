@@ -3,7 +3,7 @@ import CORS from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import io from 'socket.io';
 import * as jwt from 'jsonwebtoken';
-import jwksRsa, { CertSigningKey, SigningKey } from 'jwks-rsa';
+import jwksRsa from 'jwks-rsa';
 import {
   townSubscriptionHandler,
 } from './requestHandlers/CoveyTownRequestHandlers';
@@ -14,11 +14,6 @@ import resolvers from './resolvers/index';
 const app = Express();
 app.use(Express.json());
 app.use(CORS());
-
-export type KeyType = (
-  publicKey: CertSigningKey,
-  rsaPublicKey: SigningKey,
-) => void;
 
 // Authentication
 const client = jwksRsa({
