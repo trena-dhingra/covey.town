@@ -49,7 +49,7 @@ The frontend will automatically re-compile and reload in your browser if you cha
 
 ### GitHub URL
 
-[GitHub Repo Link](https://github.com/vaibhavii/covey.town)
+[GitHub Repo Link](https://github.com/trena-dhingra/covey.town)
 
 ### Netlify URL
 
