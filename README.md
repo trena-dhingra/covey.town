@@ -55,6 +55,10 @@ The frontend will automatically re-compile and reload in your browser if you cha
 
 [Netlify URL](https://hardcore-sinoussi-aeac49.netlify.app/)
 
+### Heroku URL (Backend)
+
+[Heroku URL](https://coveytown-network.herokuapp.com/graphql)
+
 ### Tests
 
 Run `npm test` in `services/roomService` directory to run tests written for backend. New backend tests are written in CoveyProfile.test.ts. To run the new functionality tests - Run `npm test CoveyProfile.test.ts` in `services/roomService`. To run the frontend tests - Run `npm test` in `/frontend` directory.
