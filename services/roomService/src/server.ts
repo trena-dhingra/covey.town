@@ -20,8 +20,8 @@ const client = jwksRsa({
   jwksUri: 'https://dev-fse.us.auth0.com/.well-known/jwks.json',
 });
 
-function getKey(header: any, cb: any) : any{
-  client.getSigningKey(header.kid, (_:any, key: any) : any=> {
+function getKey(header: any, cb: any) : void {
+  client.getSigningKey(header.kid, (_:Error|null, key: any) : void => {
     const signingKey = key.publicKey || key.rsaPublicKey;
     cb(null, signingKey);
   });
@@ -39,11 +39,11 @@ const options = {
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) :any => {
+  context: ({ req }) :{ user: Promise<unknown>; } => {
     // simple auth check on every request
     const token = req.headers.authorization || '';
-    const user = new Promise((resolve, reject) : any=> {
-      jwt.verify(token, getKey, options, (err : any, decoded: any):any => {
+    const user = new Promise((resolve, reject) : void => {
+      jwt.verify(token, getKey, options, (err : Error|null, decoded:any): void => {
         if (err) {
           return reject(err);
         }
@@ -62,6 +62,7 @@ apolloServer.applyMiddleware({ app, path: '/graphql' });
 // Represents the database connection
 connection();
 
+// eslint-disable-next-line no-console
 const http = app.listen(process.env.PORT || 8081, () => console.log('Listening'));
 const socketServer = new io.Server(http, { cors: { origin: '*' } });
 socketServer.on('connection', townSubscriptionHandler);
