@@ -28,11 +28,11 @@ Backend :
 UML Sequence Diagrams
 
 ---
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/signup.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/login_logout.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/user_update_delete.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/search.jpeg"/>
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/friends.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/master/screenshots/signup.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/master/screenshots/login_logout.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/master/screenshots/user_update_delete.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/master/screenshots/search.jpeg"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/master/screenshots/friends.jpeg"/>
 
 **DETAILED DESIGN**
 
