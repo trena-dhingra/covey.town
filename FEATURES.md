@@ -52,11 +52,11 @@ My conditions of satisfaction are :
 3. You can navigate to the user profile at any time by clicking on the 'Profile' button which is the second to last button on the top-right corner.
 Attached below is a screenshot to help you navigate : 
 
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/features.png"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/master/screenshots/features.png"/>
 
 Attached below is a screenshot for the friends page :
 
-<img src="https://github.com/trena-dhingra/covey.town/raw/features.md-dhingrat/screenshots/friendRequests.JPG"/>
+<img src="https://github.com/trena-dhingra/covey.town/raw/master/screenshots/friendRequests.JPG"/>
 
 **Steps to Update profile information -**
 1. You can edit the profile information by adding/updating or removing information such as - 
